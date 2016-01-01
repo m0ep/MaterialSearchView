@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MaterialSearchView">
+        <attr name="searchBackground" format="reference|color" />
+        <attr name="searchVoiceIcon" format="reference" />
+        <attr name="searchClearIcon" format="reference" />
+        <attr name="searchBackIcon" format="reference" />
+        <attr name="suggestionEntries" format="reference"/>
+
+        <attr name="android:hint" />
+        <attr name="android:textColor" />
+        <attr name="android:textColorHint" />
+    </declare-styleable>
+
+</resources>

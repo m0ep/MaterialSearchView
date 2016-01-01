@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.MaterialSearchView.SuggestionList.Item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@android:id/icon"
+        style="@style/Widget.MaterialSearchView.SuggestionList.Item.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/spacing_listItem"
+        android:layout_marginStart="@dimen/spacing_listItem" />
+
+    <TextView
+        android:id="@android:id/text1"
+        style="@style/Widget.MaterialSearchView.SuggestionListItem.Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/spacing_listItemText"
+        android:layout_marginStart="@dimen/spacing_listItemText"
+        android:layout_marginRight="@dimen/spacing_listItem"
+        android:layout_marginEnd="@dimen/spacing_listItem"
+        tools:text="History item" />
+</RelativeLayout>

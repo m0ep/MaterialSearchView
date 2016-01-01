@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tintColor">#80000000</color>
+    <color name="searchBackground">#ffffff</color>
+    <color name="searchTextColor">#DD000000</color>
+    <color name="searchTextColorHint">#42000000</color>
+</resources>

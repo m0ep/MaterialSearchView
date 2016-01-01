@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget" />
+
+    <style name="Widget.MaterialSearchView" />
+
+    <style name="Widget.MaterialSearchView.TintView">
+        <item name="android:background">@color/tintColor</item>
+    </style>
+
+    <style name="Widget.MaterialSearchView.SearchTopContainer">
+        <item name="android:background">@color/searchBackground</item>
+    </style>
+
+    <style name="Widget.MaterialSearchView.IconButton">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingLeft">@dimen/spacing_normal</item>
+        <item name="android:paddingRight">@dimen/spacing_normal</item>
+    </style>
+
+    <style name="Widget.MaterialSearchView.SearchTextView">
+        <item name="android:paddingLeft">@dimen/spacing_searchTextView</item>
+        <item name="android:paddingRight">@dimen/spacing_searchTextView</item>
+
+        <item name="android:background">@null</item>
+        <item name="android:textColor">@color/searchTextColor</item>
+        <item name="android:textColorHint">@color/searchTextColorHint</item>
+        <item name="android:textSize">@dimen/font_size_normal</item>
+
+        <item name="android:hint">@string/search</item>
+        <item name="android:singleLine">true</item>
+
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="android:inputMethod">textNoSuggestions</item>
+    </style>
+
+    <style name="Widget.MaterialSearchView.SuggestionList">
+        <item name="android:divider">@null</item>
+        <item name="android:animateLayoutChanges">true</item>
+    </style>
+
+    <style name="Widget.MaterialSearchView.SuggestionList.Item" parent="">
+        <item name="android:paddingBottom">@dimen/spacing_small</item>
+        <item name="android:paddingTop">@dimen/spacing_small</item>
+        <item name="android:minHeight">@dimen/minheight_listItem</item>
+    </style>
+
+    <style name="Widget.MaterialSearchView.SuggestionList.Item.Icon" parent="">
+        <item name="android:scaleType">center</item>
+        <item name="android:src">@drawable/ic_history</item>
+    </style>
+
+    <style name="Widget.MaterialSearchView.SuggestionListItem.Text" parent="">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/font_size_normal</item>
+    </style>
+
+
+</resources>
