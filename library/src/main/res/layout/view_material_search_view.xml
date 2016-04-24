@@ -81,7 +81,8 @@
             style="@style/Widget.MaterialSearchView.SuggestionList"
             android:id="@+id/suggestionList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"/>
     </LinearLayout>
 
 </FrameLayout>
