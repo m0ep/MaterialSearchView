@@ -8,23 +8,25 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 
-/* package */ final class Utils {
+/* package */ final class MaterialSearchViewUtils {
 
-    private Utils() {
+    private MaterialSearchViewUtils() {
         /* hidden constructor */
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void enterCircularReveal(@NonNull View view, int cx, int cy, @Nullable Animator.AnimatorListener listener) {
+    public static void enterCircularReveal(@NonNull View view, int cx, int cy, long duration, @Nullable Animator.AnimatorListener listener) {
         final int endRadius = Math.max(view.getMeasuredWidth(), view.getMeasuredHeight());
 
         Animator anim = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, endRadius);
+        anim.setDuration(duration);
         anim.setInterpolator(new DecelerateInterpolator());
         if (null != listener) {
             anim.addListener(listener);
@@ -35,11 +37,11 @@ import android.view.inputmethod.InputMethodManager;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void exitCircularReveal(@NonNull final View view, int cx, int cy, @Nullable final Animator.AnimatorListener listener) {
+    public static void exitCircularReveal(@NonNull final View view, int cx, int cy, int duration, @Nullable final Animator.AnimatorListener listener) {
         final int startRadius = Math.max(view.getMeasuredWidth(), view.getMeasuredHeight());
 
         Animator anim = ViewAnimationUtils.createCircularReveal(view, cx, cy, startRadius, 0);
-        anim.setDuration(view.getResources().getInteger(android.R.integer.config_mediumAnimTime));
+        anim.setDuration(duration);
         anim.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationCancel(Animator animation) {
@@ -193,5 +195,13 @@ import android.view.inputmethod.InputMethodManager;
     public static void hideKeyboard(@NonNull View view) {
         InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static boolean isNullOrEmpty(CharSequence charSequence) {
+        return null == charSequence || 0 == TextUtils.getTrimmedLength(charSequence);
+    }
+
+    public static CharSequence nullToEmpty(CharSequence charSequence) {
+        return isNullOrEmpty(charSequence) ? "" : charSequence;
     }
 }

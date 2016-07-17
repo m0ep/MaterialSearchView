@@ -5,26 +5,27 @@
 
     <style name="Widget.MaterialSearchView" />
 
-    <style name="Widget.MaterialSearchView.TintView">
+    <style name="Widget.MaterialSearchView.TintBackground">
         <item name="android:background">@color/tintColor</item>
     </style>
 
-    <style name="Widget.MaterialSearchView.SearchTopContainer">
+    <style name="Widget.MaterialSearchView.SearchContainer">
         <item name="android:background">@color/searchBackground</item>
     </style>
 
-    <style name="Widget.MaterialSearchView.IconButton">
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:paddingLeft">@dimen/spacing_normal</item>
-        <item name="android:paddingRight">@dimen/spacing_normal</item>
+    <style name="Widget.MaterialSearchView.SearchBar">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
     </style>
 
-    <style name="Widget.MaterialSearchView.SearchTextView">
-        <item name="android:paddingLeft">@dimen/spacing_searchTextView</item>
-        <item name="android:paddingRight">@dimen/spacing_searchTextView</item>
+    <style name="Widget.MaterialSearchView.ActionButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:tint">@color/action_icon_light</item>
+    </style>
 
+    <style name="Widget.MaterialSearchView.SearchEditText">
         <item name="android:background">@null</item>
-        <item name="android:textColor">@color/searchTextColor</item>
         <item name="android:textColorHint">@color/searchTextColorHint</item>
         <item name="android:textSize">@dimen/font_size_normal</item>
 
@@ -32,7 +33,7 @@
         <item name="android:singleLine">true</item>
 
         <item name="android:imeOptions">actionSearch</item>
-        <item name="android:inputMethod">textNoSuggestions</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="Widget.MaterialSearchView.SuggestionList">
@@ -40,18 +41,18 @@
         <item name="android:animateLayoutChanges">true</item>
     </style>
 
-    <style name="Widget.MaterialSearchView.SuggestionList.Item" parent="">
+    <style name="Widget.MaterialSearchView.SuggestionListItem" parent="">
         <item name="android:paddingBottom">@dimen/spacing_small</item>
         <item name="android:paddingTop">@dimen/spacing_small</item>
-        <item name="android:minHeight">@dimen/minheight_listItem</item>
+        <item name="android:minHeight">@dimen/minHeight_listItem</item>
     </style>
 
-    <style name="Widget.MaterialSearchView.SuggestionList.Item.Icon" parent="">
+    <style name="Widget.MaterialSearchView.SuggestionListItem_Icon">
         <item name="android:scaleType">center</item>
         <item name="android:src">@drawable/ic_history</item>
     </style>
 
-    <style name="Widget.MaterialSearchView.SuggestionListItem.Text" parent="">
+    <style name="Widget.MaterialSearchView.SuggestionListItem_Text">
         <item name="android:gravity">center_vertical</item>
         <item name="android:singleLine">true</item>
         <item name="android:textSize">@dimen/font_size_normal</item>

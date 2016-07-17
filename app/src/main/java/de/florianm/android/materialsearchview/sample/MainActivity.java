@@ -9,8 +9,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import de.florianm.android.materialsearchview.MaterialSearchView;
 
@@ -67,8 +70,6 @@ public class MainActivity extends AppCompatActivity implements MaterialSearchVie
                     searchView.setQuery(searchWrd, true);
                 }
             }
-
-            return;
         }
     }
 
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MaterialSearchVie
 
     @Override
     public boolean onSubmitQuery(CharSequence text) {
-        Log.d(TAG, "Query submitted: " + text);
+        Toast.makeText(this, "Query: " + text, Toast.LENGTH_SHORT).show();
         return false;
     }
 

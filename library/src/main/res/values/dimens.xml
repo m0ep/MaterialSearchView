@@ -13,7 +13,7 @@
     
     <dimen name="spacing_listItem">16dp</dimen>
     <dimen name="spacing_listItemText">72dp</dimen>
-    <dimen name="minheight_listItem">48dp</dimen>
+    <dimen name="minHeight_listItem">48dp</dimen>
 
     <dimen name="spacing_searchTextView">56dp</dimen>
 

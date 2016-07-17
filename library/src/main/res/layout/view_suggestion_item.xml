@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.MaterialSearchView.SuggestionList.Item"
+    style="@style/Widget.MaterialSearchView.SuggestionListItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
         android:id="@android:id/icon"
-        style="@style/Widget.MaterialSearchView.SuggestionList.Item.Icon"
+        style="@style/Widget.MaterialSearchView.SuggestionListItem_Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@android:id/text1"
-        style="@style/Widget.MaterialSearchView.SuggestionListItem.Text"
+        style="@style/Widget.MaterialSearchView.SuggestionListItem_Text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

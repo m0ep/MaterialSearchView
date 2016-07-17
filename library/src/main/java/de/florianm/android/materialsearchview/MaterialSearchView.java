@@ -13,6 +13,8 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.speech.RecognizerIntent;
+import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -23,7 +25,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,17 +43,17 @@ public class MaterialSearchView extends FrameLayout
 
     public static final int REQUEST_VOICE_INPUT = 0xff01;
 
-    private View searchLayoutContainer;
+
     private View tintView;
     private View searchContainer;
-    private View searchBarContainer;
-    private ImageButton backIconButton;
-    private TextView searchTextView;
-    private ImageButton voiceIconButton;
-    private ImageButton clearIconButton;
+    private View searchBar;
+    private View suggestionContainer;
+    private AppCompatImageButton backIconButton;
+    private AppCompatEditText searchTextView;
+    private AppCompatImageButton actionButton;
     private ListView suggestionList;
 
-    private CharSequence queryTextOld;
+    private CharSequence oldQueryText;
     private int animationDuration;
 
     private OnSearchViewListener searchViewListener;
@@ -72,7 +73,7 @@ public class MaterialSearchView extends FrameLayout
     }
 
     private void initWidget(AttributeSet attrs, int defStyleAttr) {
-        animationDuration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+        animationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         initViews();
         applyStyles(attrs, defStyleAttr);
@@ -81,39 +82,31 @@ public class MaterialSearchView extends FrameLayout
     private void initViews() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.view_material_search_view, this, true);
 
-        searchLayoutContainer = findViewById(R.id.searchLayoutContainer);
-        tintView = view.findViewById(R.id.tintView);
+        tintView = view.findViewById(R.id.tintBackground);
         searchContainer = view.findViewById(R.id.searchContainer);
-        searchBarContainer = view.findViewById(R.id.searchBarContainer);
-        backIconButton = (ImageButton) view.findViewById(R.id.backIconButton);
-        searchTextView = (TextView) view.findViewById(R.id.searchTextView);
-        voiceIconButton = (ImageButton) view.findViewById(R.id.voiceIconButton);
-        clearIconButton = (ImageButton) view.findViewById(R.id.clearIconButton);
+        searchBar = view.findViewById(R.id.searchBar);
+
+        backIconButton = (AppCompatImageButton) view.findViewById(R.id.backButton);
+        searchTextView = (AppCompatEditText) view.findViewById(R.id.searchTextView);
+        actionButton = (AppCompatImageButton) view.findViewById(R.id.actionButton);
+
+        suggestionContainer = view.findViewById(R.id.suggestionContainer);
         suggestionList = (ListView) view.findViewById(R.id.suggestionList);
 
         backIconButton.setOnClickListener(this);
-        voiceIconButton.setOnClickListener(this);
-        clearIconButton.setOnClickListener(this);
+        actionButton.setOnClickListener(this);
         tintView.setOnClickListener(this);
-
-        boolean isVoiceAvailable = isVoiceAvailable();
-        voiceIconButton.setVisibility(isVoiceAvailable ? View.VISIBLE : View.GONE);
-        clearIconButton.setVisibility(isVoiceAvailable ? View.GONE : View.VISIBLE);
 
         searchTextView.addTextChangedListener(this);
         searchTextView.setOnEditorActionListener(this);
         searchTextView.setOnFocusChangeListener(this);
 
         suggestionList.setOnItemClickListener(this);
+
+        updateActionButton();
+        hideSearchViewInstantly();
     }
 
-    private boolean isVoiceAvailable() {
-        PackageManager packageManager = getContext().getPackageManager();
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-        List<ResolveInfo> result = packageManager.queryIntentActivities(intent, 0);
-        return null != result && 0 < result.size();
-    }
 
     public void setSearchViewListener(OnSearchViewListener searchViewListener) {
         this.searchViewListener = searchViewListener;
@@ -144,18 +137,6 @@ public class MaterialSearchView extends FrameLayout
                 setSearchBackground(a.getDrawable(R.styleable.MaterialSearchView_searchBackground));
             }
 
-            if (a.hasValue(R.styleable.MaterialSearchView_searchBackIcon)) {
-                setBackIcon(a.getDrawable(R.styleable.MaterialSearchView_searchBackIcon));
-            }
-
-            if (a.hasValue(R.styleable.MaterialSearchView_searchClearIcon)) {
-                setClearIcon(a.getDrawable(R.styleable.MaterialSearchView_searchClearIcon));
-            }
-
-            if (a.hasValue(R.styleable.MaterialSearchView_searchVoiceIcon)) {
-                setVoiceIcon(a.getDrawable(R.styleable.MaterialSearchView_searchVoiceIcon));
-            }
-
             if (a.hasValue(R.styleable.MaterialSearchView_suggestionEntries)) {
                 setSuggestionEntries(a.getTextArray(R.styleable.MaterialSearchView_suggestionEntries));
             }
@@ -165,28 +146,35 @@ public class MaterialSearchView extends FrameLayout
     }
 
     public void showSearchView() {
+        showSearchView(
+                searchBar.getMeasuredWidth(),
+                searchBar.getMeasuredHeight() / 2
+        );
+    }
+
+    public void showSearchView(int revealCenterX, int revealCenterY) {
         if (isSearchViewVisible()) {
             return;
         }
 
-        showSearchViewAnimated();
+        showSearchViewAnimated(revealCenterX, revealCenterY);
     }
 
     public boolean isSearchViewVisible() {
-        return View.VISIBLE == searchLayoutContainer.getVisibility();
+        return View.VISIBLE == getVisibility();
     }
 
-    private void showSearchViewAnimated() {
+    private void showSearchViewAnimated(int revealCenterX, int revealCenterY) {
         Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                suggestionList.setVisibility(GONE);
-                searchLayoutContainer.setVisibility(VISIBLE);
+                suggestionContainer.setVisibility(GONE);
+                setVisibility(VISIBLE);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                Utils.showKeyboard(searchTextView);
+                MaterialSearchViewUtils.showKeyboard(searchTextView);
                 if (null != searchViewListener) {
                     searchViewListener.onShowSearchView();
                 }
@@ -194,28 +182,62 @@ public class MaterialSearchView extends FrameLayout
         };
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Utils.enterCircularReveal(searchContainer,
-                    searchBarContainer.getMeasuredWidth(),
-                    searchBarContainer.getMeasuredHeight() / 2,
-                    listener);
+            MaterialSearchViewUtils.enterCircularReveal(searchContainer,
+                    revealCenterX,
+                    revealCenterY,
+                    animationDuration,
+                    listener
+            );
         } else {
-            Utils.fadeIn(searchContainer, animationDuration, listener);
+            MaterialSearchViewUtils.fadeIn(
+                    searchContainer,
+                    animationDuration,
+                    listener
+            );
         }
     }
 
+    private void hideSuggestions() {
+        MaterialSearchViewUtils.fadeOut(tintView, animationDuration);
+        suggestionContainer.setVisibility(GONE);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (backIconButton == v) {
+            hideSearchView();
+        } else if (actionButton == v) {
+            if (isVoiceInputActionEnabled()) {
+                startVoiceInput();
+            } else if (isClearSearchTextActionEnabled()) {
+                clearQueryText();
+            }
+        } else if (tintView == v) {
+            hideSearchView();
+        }
+    }
+
+
     public void hideSearchView() {
+        hideSearchView(
+                searchBar.getMeasuredWidth(),
+                searchBar.getMeasuredHeight() / 2
+        );
+    }
+
+    public void hideSearchView(int revealCenterX, int revealCenterY) {
         if (!isSearchViewVisible()) {
             return;
         }
 
-        hideSearchViewAnimated();
+        hideSearchViewAnimated(revealCenterX, revealCenterY);
     }
 
-    private void hideSearchViewAnimated() {
+    private void hideSearchViewAnimated(int revealCenterX, int revealCenterY) {
         final Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                searchLayoutContainer.setVisibility(GONE);
+                setVisibility(GONE);
                 tintView.setVisibility(GONE);
 
                 if (null != searchViewListener) {
@@ -227,31 +249,35 @@ public class MaterialSearchView extends FrameLayout
         hideSuggestions();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Utils.exitCircularReveal(searchContainer,
-                    searchBarContainer.getMeasuredWidth(),
-                    searchBarContainer.getMeasuredHeight() / 2,
-                    listener);
+            MaterialSearchViewUtils.exitCircularReveal(searchContainer,
+                    revealCenterX,
+                    revealCenterY,
+                    animationDuration,
+                    listener
+            );
         } else {
-            Utils.fadeOut(searchContainer, animationDuration, listener);
+            MaterialSearchViewUtils.fadeOut(
+                    searchContainer,
+                    animationDuration,
+                    listener
+            );
         }
     }
 
-    private void hideSuggestions() {
-        Utils.fadeOut(tintView, animationDuration);
-        suggestionList.setVisibility(GONE);
+    public void hideSearchViewInstantly(){
+        setVisibility(View.GONE);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (backIconButton == v) {
-            hideSearchView();
-        } else if (voiceIconButton == v) {
-            startVoiceInput();
-        } else if (clearIconButton == v) {
-            clearQueryText();
-        } else if (tintView == v) {
-            hideSearchView();
-        }
+    private boolean isVoiceInputActionEnabled() {
+        return isVoiceAvailable() && TextUtils.isEmpty(searchTextView.getText());
+    }
+
+    private boolean isVoiceAvailable() {
+        PackageManager packageManager = getContext().getPackageManager();
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+        List<ResolveInfo> result = packageManager.queryIntentActivities(intent, 0);
+        return null != result && 0 < result.size();
     }
 
     private void startVoiceInput() {
@@ -265,9 +291,13 @@ public class MaterialSearchView extends FrameLayout
         }
     }
 
+    private boolean isClearSearchTextActionEnabled() {
+        return !TextUtils.isEmpty(searchTextView.getText());
+    }
+
     private void clearQueryText() {
         searchTextView.setText(null);
-        Utils.showKeyboard(searchTextView);
+        MaterialSearchViewUtils.showKeyboard(searchTextView);
     }
 
     @Override
@@ -276,22 +306,29 @@ public class MaterialSearchView extends FrameLayout
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (TextUtils.isEmpty(s) || 0 == TextUtils.getTrimmedLength(s)) {
-            boolean isVoiceAvailable = isVoiceAvailable();
-            voiceIconButton.setVisibility(isVoiceAvailable ? View.VISIBLE : View.GONE);
-            clearIconButton.setVisibility(GONE);
-        } else {
-            voiceIconButton.setVisibility(GONE);
-            clearIconButton.setVisibility(VISIBLE);
+    public void onTextChanged(CharSequence text, int start, int before, int count) {
+        updateActionButton();
+
+        text = MaterialSearchViewUtils.nullToEmpty(text);
+        if (null != searchViewListener && !text.equals(oldQueryText)) {
+            searchViewListener.onQueryTextChanged(text);
         }
 
-        s = TextUtils.isEmpty(s) ? "" : s;
-        if (null != searchViewListener && !s.equals(queryTextOld)) {
-            searchViewListener.onQueryTextChanged(s);
-        }
+        oldQueryText = text;
+    }
 
-        queryTextOld = s;
+    private void updateActionButton() {
+        boolean isVisible = isClearSearchTextActionEnabled() || isVoiceInputActionEnabled();
+        actionButton.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        if (isVisible) {
+            if (isClearSearchTextActionEnabled()) {
+                actionButton.setImageResource(R.drawable.ic_close_white_24dp);
+            } else if (isVoiceInputActionEnabled()) {
+                actionButton.setImageResource(R.drawable.ic_keyboard_voice_white_24dp);
+            } else {
+                actionButton.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -303,7 +340,7 @@ public class MaterialSearchView extends FrameLayout
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (EditorInfo.IME_ACTION_SEARCH == actionId) {
             submitQuery(searchTextView.getText());
-            Utils.hideKeyboard(searchTextView);
+            MaterialSearchViewUtils.hideKeyboard(searchTextView);
         }
 
         return false;
@@ -321,8 +358,8 @@ public class MaterialSearchView extends FrameLayout
     }
 
     public void showSuggestions() {
-        Utils.fadeIn(tintView, animationDuration);
-        Utils.fadeIn(suggestionList, animationDuration);
+        MaterialSearchViewUtils.fadeIn(tintView, animationDuration);
+        MaterialSearchViewUtils.fadeIn(suggestionContainer, animationDuration);
     }
 
     @Override
@@ -333,7 +370,7 @@ public class MaterialSearchView extends FrameLayout
     }
 
     private void submitQuery(CharSequence query) {
-        searchBarContainer.requestFocus();
+        searchBar.requestFocus();
         if (null != searchViewListener && searchViewListener.onSubmitQuery(query)) {
             hideSearchView();
         } else {
@@ -346,7 +383,7 @@ public class MaterialSearchView extends FrameLayout
         Parcelable superState = super.onSaveInstanceState();
 
         SavedState savedState = new SavedState(superState);
-        savedState.queryTextOld = queryTextOld;
+        savedState.oldQueryText = oldQueryText;
         savedState.queryText = searchTextView.getText();
         savedState.viewVisible = isSearchViewVisible();
 
@@ -363,7 +400,7 @@ public class MaterialSearchView extends FrameLayout
         SavedState savedState = (SavedState) state;
         onRestoreInstanceState(savedState.getSuperState());
 
-        queryTextOld = savedState.queryTextOld;
+        oldQueryText = savedState.oldQueryText;
         setQuery(savedState.queryText);
 
         if (savedState.viewVisible) {
@@ -372,9 +409,9 @@ public class MaterialSearchView extends FrameLayout
     }
 
     private void showSearchViewInstantly() {
-        searchLayoutContainer.setVisibility(VISIBLE);
+        setVisibility(VISIBLE);
         searchContainer.setVisibility(VISIBLE);
-        Utils.showKeyboard(searchTextView);
+        MaterialSearchViewUtils.showKeyboard(searchTextView);
 
         if (null != searchViewListener) {
             searchViewListener.onShowSearchView();
@@ -388,7 +425,6 @@ public class MaterialSearchView extends FrameLayout
         }
     }
 
-    @SuppressWarnings("unused")
     public void setQuery(CharSequence query) {
         setQuery(query, false);
     }
@@ -406,43 +442,31 @@ public class MaterialSearchView extends FrameLayout
     }
 
     public void setSuggestionEntries(CharSequence[] entries) {
-        if(null != entries && 0 < entries.length){
+        if (null != entries && 0 < entries.length) {
             SuggestionAdapter suggestionAdapter = new SuggestionAdapter();
             suggestionAdapter.setItems(entries);
             setSuggestionAdapter(suggestionAdapter);
-        } else{
+        } else {
             setSuggestionAdapter(null);
             hideSuggestions();
         }
     }
 
-    public void setSuggestionAdapter(ListAdapter adapter){
-        if(null == adapter){
+    public void setSuggestionAdapter(ListAdapter adapter) {
+        if (null == adapter) {
             adapter = new SuggestionAdapter();
         }
 
         suggestionList.setAdapter(adapter);
     }
 
-    @SuppressWarnings("deprecation")
     public void setSearchBackground(Drawable drawable) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             searchContainer.setBackground(drawable);
         } else {
+            //noinspection deprecation
             searchContainer.setBackgroundDrawable(drawable);
         }
-    }
-
-    public void setBackIcon(Drawable drawable) {
-        backIconButton.setImageDrawable(drawable);
-    }
-
-    public void setClearIcon(Drawable drawable) {
-        clearIconButton.setImageDrawable(drawable);
-    }
-
-    public void setVoiceIcon(Drawable drawable) {
-        voiceIconButton.setImageDrawable(drawable);
     }
 
     public interface OnSearchViewListener {
@@ -476,15 +500,15 @@ public class MaterialSearchView extends FrameLayout
 
     /* package */ static class SavedState extends View.BaseSavedState {
         CharSequence queryText;
-        CharSequence queryTextOld;
+        CharSequence oldQueryText;
         boolean viewVisible;
 
         public SavedState(Parcel source) {
             super(source);
 
-            queryText = source.readString();
-            queryTextOld = source.readString();
-            viewVisible = 0 != source.readInt();
+            queryText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
+            oldQueryText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
+            viewVisible = 1 == source.readInt();
         }
 
         public SavedState(Parcelable superState) {
@@ -494,8 +518,9 @@ public class MaterialSearchView extends FrameLayout
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeString(null == queryText ? "" : queryText.toString());
-            out.writeString(null == queryTextOld ? "" : queryTextOld.toString());
+
+            TextUtils.writeToParcel(queryText, out, 0);
+            TextUtils.writeToParcel(oldQueryText, out, 0);
             out.writeInt(viewVisible ? 1 : 0);
         }
 

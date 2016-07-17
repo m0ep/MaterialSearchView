@@ -1,88 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/searchLayoutContainer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="invisible"
-    tools:visibility="visible">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <View
-        android:id="@+id/tintView"
-        style="@style/Widget.MaterialSearchView.TintView"
+        android:id="@+id/tintBackground"
+        style="@style/Widget.MaterialSearchView.TintBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible"
-        tools:visibility="visible"/>
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/searchContainer"
-        style="@style/Widget.MaterialSearchView.SearchTopContainer"
+        style="@style/Widget.MaterialSearchView.SearchContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/searchBarContainer"
+            android:id="@+id/searchBar"
+            style="@style/Widget.MaterialSearchView.SearchBar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:padding="4dp">
 
-            <ImageButton
-                android:id="@+id/backIconButton"
-                style="@style/Widget.MaterialSearchView.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_action_back"/>
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/backButton"
+                style="@style/Widget.MaterialSearchView.ActionButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_arrow_back_white_24dp" />
 
-            <EditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/searchTextView"
+                style="@style/Widget.MaterialSearchView.SearchEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/spacing_searchTextView"
-                android:layout_marginRight="@dimen/spacing_searchTextView"
-                android:background="@null"
-                android:hint="@string/search"
-                android:imeOptions="actionSearch"
-                android:inputType="textNoSuggestions"
-                android:singleLine="true"
-                android:textColor="@color/searchTextColor"
-                android:textColorHint="@color/searchTextColorHint"
-                android:textSize="@dimen/font_size_large" />
+                android:layout_marginLeft="@dimen/spacing_listItemText"
+                android:layout_marginStart="@dimen/spacing_listItemText"
+                android:layout_toLeftOf="@+id/actionButton"
+                android:layout_toStartOf="@+id/actionButton" />
 
-            <ImageButton
-                android:id="@+id/voiceIconButton"
-                style="@style/Widget.MaterialSearchView.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/actionButton"
+                style="@style/Widget.MaterialSearchView.ActionButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/ic_action_voice" />
+                android:src="@drawable/ic_close_white_24dp" />
 
-            <ImageButton
-                android:id="@+id/clearIconButton"
-                style="@style/Widget.MaterialSearchView.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/ic_action_close"
-                android:visibility="gone" />
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/suggestionContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:layout_alignParentBottom="true"
-                android:background="#10000000" />
-        </RelativeLayout>
+                android:layout_height="1dp"
+                android:background="@color/divider_light" />
 
-        <ListView
-            style="@style/Widget.MaterialSearchView.SuggestionList"
-            android:id="@+id/suggestionList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"/>
+            <ListView
+                android:id="@+id/suggestionList"
+                style="@style/Widget.MaterialSearchView.SuggestionList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp" />
+        </FrameLayout>
     </LinearLayout>
 
-</FrameLayout>
+</merge>
